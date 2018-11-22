@@ -81,27 +81,37 @@ namespace BalikoBot
 		/// <remarks>
 		/// Přidává balík/balíky, které se odešlou ke svozu.
 		/// </remarks>
-		public async Task<BalikoBotPackage> Add(string eid, string serviceType, BalikoBotData data)
+		public async Task<IEnumerable<BalikoBotPackage>> Add(params BalikoBotData[] datas)
 		{
-			// EshopId
-			data.AddSafe(BalikoBotData.EID, eid);
-			// typ sluzby
-			data.AddSafe(BalikoBotData.SERVICE_TYPE, serviceType);
-			// typ sluzby
-			data.AddSafe(BalikoBotData.ERRORS, true);
+			if (datas == null || datas.Length == 0)
+				throw new ArgumentException(nameof(datas));
 
-			var o = JObject.FromObject(data);
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/add", o);
-
-			var result = json.ObjectValuesOfProperties().First();
-			return new BalikoBotPackage()
+			var data = datas.FromArrayToJArray((x, arr) =>
 			{
-				EshopId = eid,
-				CarrierId = (string)result["carrier_id"],
-				PackageId = (int)result["package_id"],
-				LabelUrl = (string)result["label_url"],
-				Status = (int)result["status"],
-			};
+				arr.Add(JObject.FromObject(x));
+			});
+
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/add", data);
+
+			int status = (int)json["status"];
+			// OK (200) nebo OK, uz drive ulozeno (208)
+			if (status == 200 || status == 208)
+			{
+				return json.ForEachValuesOfProperties((o, x) => new BalikoBotPackage()
+				{
+					EshopId = (string)datas[x][BalikoBotData.EID],
+
+					CarrierId = (string)o["carrier_id"],
+					PackageId = (int)o["package_id"],
+					LabelUrl = (string)o["label_url"],
+					Status = (int)o["status"],
+				});
+			}
+			else
+			{
+				// chyba
+				throw new BalikoBotAddException(datas, json);
+			}
 		}
 		#endregion
 

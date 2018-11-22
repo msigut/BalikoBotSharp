@@ -1,7 +1,7 @@
-using BalikoBot;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,11 +56,14 @@ namespace BalikoBot.Tests
 
 			// 1. pridani baliku do svozu
 			const string eid = "123001";
-			var data = new BalikoBotData()
+			var data = new BalikoBotData(eid, "DR")
 				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ")
 				.AddDobirka(12300m, eid, 12345.85m, "CZK");
 
-			var r1 = await client.Add(eid, "DR", data);
+			var res = await client.Add(data);
+			Assert.NotEmpty(res);
+
+			var r1 = res.FirstOrDefault();
 			Assert.NotNull(r1);
 			Assert.NotEmpty(r1.CarrierId);
 			Assert.True(r1.PackageId > 0);
@@ -93,12 +96,14 @@ namespace BalikoBot.Tests
 			var client = new BalikoBotCeskaPostaClient(Options);
 
 			// 1. pridani baliku do svozu
-			var data = new BalikoBotData()
+			var data = new BalikoBotData(DateTime.Now.ToString("yyyyMMddHHmmss"), "DR")
 				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ")
 				.AddCena(1450m);
 
-			var eid = DateTime.Now.ToString("yyyyMMddHHmmss");
-			var r1 = await client.Add(eid, "DR", data);
+			var res = await client.Add(data);
+			Assert.NotEmpty(res);
+
+			var r1 = res.FirstOrDefault();
 
 			// 2. vyzvedne stitky
 			var l1 = await client.Labels(r1.PackageId);
@@ -117,6 +122,18 @@ namespace BalikoBot.Tests
 			var o2 = await client.OrderView(o1.OrderId);
 			Assert.True(o2.OrderId > 0);
 			Assert.NotEmpty(o2.PackageIds);
+		}
+
+		[Fact]
+		public async Task TestError()
+		{
+			var client = new BalikoBotCeskaPostaClient(Options);
+
+			// 1. pridani baliku do svozu; chybi cena
+			var data = new BalikoBotData("123001", "DR").AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ");
+			var ex = await Assert.ThrowsAsync<BalikoBotAddException>(async () => await client.Add(data));
+			Assert.NotEmpty(ex.Errors);
+			Assert.Contains(ex.Errors, x => x.Type == 406 && x.Attribute == BalikoBotData.PRICE);
 		}
 	}
 }

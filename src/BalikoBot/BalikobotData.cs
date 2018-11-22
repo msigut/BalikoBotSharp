@@ -26,6 +26,21 @@ namespace BalikoBot
 
 		public static readonly string ERRORS = "return_full_errors";
 
+		#region Constructor
+		public BalikoBotData()
+		{
+		}
+		public BalikoBotData(string eid, string serviceType, bool errors = true) : this()
+		{
+			// EshopId
+			AddSafe(BalikoBotData.EID, eid);
+			// typ sluzby
+			AddSafe(BalikoBotData.SERVICE_TYPE, serviceType);
+			// detailni chybove hlaseni
+			AddSafe(BalikoBotData.ERRORS, errors);
+		}
+		#endregion
+
 		#region Doruceni
 		/// <summary>
 		/// prida udaje o doruceni
