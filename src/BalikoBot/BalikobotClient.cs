@@ -26,6 +26,7 @@ namespace BalikoBot
 		private readonly string _password;
 
 		#region Constructor
+
 		protected BalikoBotClient(Carriers carrier, string login, string password)
 		{
 			_carrier = carrier;
@@ -38,9 +39,9 @@ namespace BalikoBot
 			_username = config.Username;
 			_password = config.Password;
 		}
+
 		#endregion
 
-		#region Services
 		/// <summary>
 		/// sluzby podle dopravce
 		/// </summary>
@@ -57,9 +58,7 @@ namespace BalikoBot
 				})
 				.ToArray();
 		}
-		#endregion
 
-		#region Countries4service
 		/// <summary>
 		/// Seznam států, do kterých lze zasílat skrze jednotlivé služby přepravce
 		/// </summary>
@@ -73,9 +72,7 @@ namespace BalikoBot
 			var countries = (JObject)service["countries"];
 			return countries.StringValuesOfProperties().ToArray();
 		}
-		#endregion
 
-		#region Add
 		/// <summary>
 		/// přidání balíku/balíků		/// </summary>
 		/// <remarks>
@@ -113,9 +110,7 @@ namespace BalikoBot
 				throw new BalikoBotAddException(datas, json);
 			}
 		}
-		#endregion
 
-		#region Drop
 		/// <summary>
 		/// odstranění balíku
 		/// </summary>
@@ -139,9 +134,7 @@ namespace BalikoBot
 				Status = (int)o["status"]
 			});
 		}
-		#endregion
 
-		#region Track
 		/// <summary>
 		/// stav balíku
 		/// </summary>
@@ -170,9 +163,7 @@ namespace BalikoBot
 				})
 			});
 		}
-		#endregion
 
-		#region TrackStatus
 		/// <summary>
 		/// posledni stav balíku
 		/// </summary>
@@ -189,7 +180,7 @@ namespace BalikoBot
 				arr.Add(JObject.FromObject(new { id = x }));
 			});
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/track", data);
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/trackstatus", data);
 
 			return json.ForEachValuesOfProperties((o, x) => new BalikoBotTrackStatus()
 			{
@@ -199,9 +190,7 @@ namespace BalikoBot
 				Text = (string)o["status_text"],
 			});
 		}
-		#endregion
 
-		#region Overview
 		/// <summary>
 		/// informace k poslednímu/konkrétnímu svozu
 		/// </summary>
@@ -220,9 +209,7 @@ namespace BalikoBot
 				LabelUrl = (string)o["label_url"],
 			});
 		}
-		#endregion
 
-		#region Package
 		/// <summary>
 		/// zaslané údaje o konkrétním balíku a odkaz na štítek pro tisk
 		/// </summary>
@@ -238,9 +225,7 @@ namespace BalikoBot
 
 			return json.ToObject<BalikoBotData>();
 		}
-		#endregion
 
-		#region Labels
 		/// <summary>
 		/// vrací hromadné PDF se štítky pro vybrané balíky u konkrétního dopravce
 		/// </summary>
@@ -261,9 +246,7 @@ namespace BalikoBot
 
 			return json.ToObject<BalikoBotLabel>();
 		}
-		#endregion
 
-		#region Order
 		/// <summary>
 		/// předání dat přepravci – svozová dávka
 		/// </summary>
@@ -284,9 +267,7 @@ namespace BalikoBot
 
 			return json.ToObject<BalikoBotOrder>();
 		}
-		#endregion
 
-		#region OrderView
 		/// <summary>
 		/// informace k poslednímu/konkrétnímu svozu
 		/// </summary>
@@ -307,7 +288,6 @@ namespace BalikoBot
 
 			return result;
 		}
-		#endregion
 
 		#region Helpers
 		private async Task<JObject> GetAsync(string url)

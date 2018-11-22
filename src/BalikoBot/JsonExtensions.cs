@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BalikoBot
 {
-	public static class JsonExtensions
+	internal static class JsonExtensions
 	{
 		public static IEnumerable<JToken> ObjectValuesOfProperties(this JObject o)
 		{

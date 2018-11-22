@@ -91,7 +91,7 @@ namespace BalikoBot.Tests
 		}
 
 		[Fact]
-		public async Task TestLabelOrder()
+		public async Task TestLabelOrderTrack()
 		{
 			var client = new BalikoBotCeskaPostaClient(Options);
 
@@ -102,7 +102,6 @@ namespace BalikoBot.Tests
 
 			var res = await client.Add(data);
 			Assert.NotEmpty(res);
-
 			var r1 = res.FirstOrDefault();
 
 			// 2. vyzvedne stitky
@@ -122,6 +121,21 @@ namespace BalikoBot.Tests
 			var o2 = await client.OrderView(o1.OrderId);
 			Assert.True(o2.OrderId > 0);
 			Assert.NotEmpty(o2.PackageIds);
+
+			// 5. track
+			var t = await client.Track(r1.CarrierId);
+			Assert.NotEmpty(t);
+			var t1 = t.FirstOrDefault();
+			Assert.NotEmpty(t1.Items);
+
+			// 6. track status
+			var tt = await client.TrackStatus(r1.CarrierId);
+			Assert.NotEmpty(tt);
+			var tt1 = tt.FirstOrDefault();
+			Assert.NotEqual(BalikoBotTrackStatuses.Cancelled, tt1.Status);
+			Assert.True(tt1.StatusId > 0);
+			Assert.NotEmpty(tt1.CarrierId);
+			Assert.NotEmpty(tt1.Text);
 		}
 
 		[Fact]
@@ -134,6 +148,10 @@ namespace BalikoBot.Tests
 			var ex = await Assert.ThrowsAsync<BalikoBotAddException>(async () => await client.Add(data));
 			Assert.NotEmpty(ex.Errors);
 			Assert.Contains(ex.Errors, x => x.Type == 406 && x.Attribute == BalikoBotData.PRICE);
+
+			// 2. track neexistujici zasilky (testovaci prostredi posila vysledek vzdy, nelze otestovat)
+			//var t = await client.Track("4613245");
+			//Assert.NotEmpty(t);
 		}
 	}
 }
