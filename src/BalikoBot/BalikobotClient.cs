@@ -13,24 +13,28 @@ using System.Threading.Tasks;
 namespace BalikoBot
 {
 	/// <summary>
-	/// klinet BalikoBot
+	/// klinet BalikoBot (obecny)
 	/// </summary>
-	public class BalikoBotClient
+	public abstract class BalikoBotClient
 	{
 		public static readonly string API_SCHEMA = "https://";
 		public static readonly string API_URL_V1 = "api.balikobot.cz";
 		public static readonly string API_URL_V2 = "api.balikobot.cz/v2";
 
-		#region Constructor
+		private readonly Carriers _carrier;
 		private readonly string _username;
 		private readonly string _password;
-		public BalikoBotClient(string login, string password)
+
+		#region Constructor
+		protected BalikoBotClient(Carriers carrier, string login, string password)
 		{
+			_carrier = carrier;
 			_username = login;
 			_password = password;
 		}
-		public BalikoBotClient(IBalikoBotConfiguration config)
+		protected BalikoBotClient(Carriers carrier, IBalikoBotConfiguration config)
 		{
+			_carrier = carrier;
 			_username = config.Username;
 			_password = config.Password;
 		}
@@ -40,9 +44,9 @@ namespace BalikoBot
 		/// <summary>
 		/// sluzby podle dopravce
 		/// </summary>
-		public async Task<IEnumerable<BalikoBotService>> GetServices(Carriers carrier)
+		public async Task<IEnumerable<BalikoBotService>> GetServices()
 		{
-			var json = await GetAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/services");
+			var json = await GetAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/services");
 
 			var services = (JObject)json["service_types"];
 			return services.Properties()
@@ -59,9 +63,9 @@ namespace BalikoBot
 		/// <summary>
 		/// Seznam států, do kterých lze zasílat skrze jednotlivé služby přepravce
 		/// </summary>
-		public async Task<IEnumerable<string>> GetCountries4service(Carriers carrier, string serviceType)
+		public async Task<IEnumerable<string>> GetCountries4service(string serviceType)
 		{
-			var json = await GetAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/countries4service");
+			var json = await GetAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/countries4service");
 
 			var services = (JObject)json["service_types"];
 			var service = services.ObjectValuesOfProperties().FirstOrDefault(x => x.Value<string>("service_type") == serviceType);
@@ -77,7 +81,7 @@ namespace BalikoBot
 		/// <remarks>
 		/// Přidává balík/balíky, které se odešlou ke svozu.
 		/// </remarks>
-		public async Task<BalikoBotPackage> Add(Carriers carrier, string eid, string serviceType, BalikoBotData data)
+		public async Task<BalikoBotPackage> Add(string eid, string serviceType, BalikoBotData data)
 		{
 			// EshopId
 			data.AddSafe(BalikoBotData.EID, eid);
@@ -87,7 +91,7 @@ namespace BalikoBot
 			data.AddSafe(BalikoBotData.ERRORS, true);
 
 			var o = JObject.FromObject(data);
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/add", o);
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/add", o);
 
 			var result = json.ObjectValuesOfProperties().First();
 			return new BalikoBotPackage()
@@ -108,7 +112,7 @@ namespace BalikoBot
 		/// <remarks>
 		/// Odstranit lze pouze zásilky, které ještě nebyly odeslány ke „svozu“ metodou ORDER.
 		/// </remarks>
-		public async Task<IEnumerable<BalikoBotResult>> Drop(Carriers carrier, params int[] packageIds)
+		public async Task<IEnumerable<BalikoBotResult>> Drop(params int[] packageIds)
 		{
 			if (packageIds == null || packageIds.Length == 0)
 				throw new ArgumentException(nameof(packageIds));
@@ -118,7 +122,7 @@ namespace BalikoBot
 				arr.Add(JObject.FromObject(new { id = x }));
 			});
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/drop", data);
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/drop", data);
 
 			return json.ForEachValuesOfProperties((o, x) => new BalikoBotResult()
 			{
@@ -134,7 +138,7 @@ namespace BalikoBot
 		/// <remarks>
 		/// Vrací všechny stavy balíku/balíků, ve kterých se dosud ocitl s textovým popisem.
 		/// </remarks>
-		public async Task<IEnumerable<BalikoBotTrack>> Track(Carriers carrier, params string[] carrierIds)
+		public async Task<IEnumerable<BalikoBotTrack>> Track(params string[] carrierIds)
 		{
 			if (carrierIds == null || carrierIds.Length == 0)
 				throw new ArgumentException(nameof(carrierIds));
@@ -144,7 +148,7 @@ namespace BalikoBot
 				arr.Add(JObject.FromObject(new { id = x }));
 			});
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V2}/{carrier}/track", data);
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V2}/{_carrier}/track", data);
 
 			return json.ForEachValuesOfProperties((o, x) => new BalikoBotTrack()
 			{
@@ -165,7 +169,7 @@ namespace BalikoBot
 		/// <remarks>
 		/// Vrací poslední stav balíku/balíků ve formě čísla a textové prezentace.
 		/// </remarks>
-		public async Task<IEnumerable<BalikoBotTrackStatus>> TrackStatus(Carriers carrier, params string[] carrierIds)
+		public async Task<IEnumerable<BalikoBotTrackStatus>> TrackStatus(params string[] carrierIds)
 		{
 			if (carrierIds == null || carrierIds.Length == 0 || carrierIds.Length > 4)
 				throw new ArgumentException(nameof(carrierIds));
@@ -175,7 +179,7 @@ namespace BalikoBot
 				arr.Add(JObject.FromObject(new { id = x }));
 			});
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/track", data);
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/track", data);
 
 			return json.ForEachValuesOfProperties((o, x) => new BalikoBotTrackStatus()
 			{
@@ -194,9 +198,9 @@ namespace BalikoBot
 		/// <remarks>
 		/// Soupis dosud neodeslaných balíků se základními informacemi.
 		/// </remarks>
-		public async Task<IEnumerable<BalikoBotPackage>> Overview(Carriers carrier)
+		public async Task<IEnumerable<BalikoBotPackage>> Overview()
 		{
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/overview");
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/overview");
 
 			return json.ForEachValuesOfProperties((o, x) => new BalikoBotPackage()
 			{
@@ -215,12 +219,12 @@ namespace BalikoBot
 		/// <remarks>
 		/// Vrací poslední stav balíku/balíků ve formě čísla a textové prezentace.
 		/// </remarks>
-		public async Task<BalikoBotData> Package(Carriers carrier, int packageId)
+		public async Task<BalikoBotData> Package(int packageId)
 		{
 			if (packageId == 0)
 				throw new ArgumentException(nameof(packageId));
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/package/{packageId}");
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/package/{packageId}");
 
 			return json.ToObject<BalikoBotData>();
 		}
@@ -233,7 +237,7 @@ namespace BalikoBot
 		/// <remarks>
 		/// Metoda vracející hromadné PDF se štítky pro vyžádané balíčky (package_ids) u vybraného dopravce.
 		/// </remarks>
-		public async Task<BalikoBotLabel> Labels(Carriers carrier, params int[] packageIds)
+		public async Task<BalikoBotLabel> Labels(params int[] packageIds)
 		{
 			if (packageIds == null || packageIds.Length == 0)
 				throw new ArgumentException(nameof(packageIds));
@@ -243,7 +247,7 @@ namespace BalikoBot
 				package_ids = new JArray(packageIds)
 			});
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/labels", data);
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/labels", data);
 
 			return json.ToObject<BalikoBotLabel>();
 		}
@@ -256,7 +260,7 @@ namespace BalikoBot
 		/// <remarks>
 		/// Předání dat do systému přepravce („objednání svozu“) pro dosud neodeslané balíky.
 		/// </remarks>
-		public async Task<BalikoBotOrder> Order(Carriers carrier, params int[] packageIds)
+		public async Task<BalikoBotOrder> Order(params int[] packageIds)
 		{
 			if (packageIds == null || packageIds.Length == 0)
 				throw new ArgumentException(nameof(packageIds));
@@ -266,7 +270,7 @@ namespace BalikoBot
 				package_ids = new JArray(packageIds)
 			});
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/order", data);
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/order", data);
 
 			return json.ToObject<BalikoBotOrder>();
 		}
@@ -276,11 +280,11 @@ namespace BalikoBot
 		/// <summary>
 		/// informace k poslednímu/konkrétnímu svozu
 		/// </summary>
-		public async Task<BalikoBotOrder> OrderView(Carriers carrier, int? orderId = null)
+		public async Task<BalikoBotOrder> OrderView(int? orderId = null)
 		{
 			var url = orderId.HasValue ? $"/{orderId}" : null;
 
-			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{carrier}/orderview{url}");
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/orderview{url}");
 
 			var result = json.ToObject<BalikoBotOrder>();
 

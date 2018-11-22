@@ -28,31 +28,31 @@ namespace BalikoBot.Tests
 		[Fact]
 		public async Task TestServices()
 		{
-			var client = new BalikoBotClient(Options);
-
-			var r1 = await client.GetServices(Carriers.cp);
+			var cp = new BalikoBotCeskaPostaClient(Options);
+			var r1 = await cp.GetServices();
 			Assert.NotEmpty(r1);
 
-			var r2 = await client.GetServices(Carriers.ppl);
+			var ppl = new BalikoBotPPLClient(Options);
+			var r2 = await ppl.GetServices();
 			Assert.NotEmpty(r2);
 		}
 
 		[Fact]
 		public async Task TestCountries4service()
 		{
-			var client = new BalikoBotClient(Options);
-
-			var r2 = await client.GetCountries4service(Carriers.ppl, "2");
+			var ppl = new BalikoBotPPLClient(Options);
+			var r2 = await ppl.GetCountries4service("2");
 			Assert.NotEmpty(r2);
 
-			var r1 = await client.GetCountries4service(Carriers.cp, "DR");
+			var cp = new BalikoBotCeskaPostaClient(Options);
+			var r1 = await cp.GetCountries4service("DR");
 			Assert.Single(r1);
 		}
 
 		[Fact]
 		public async Task TestAddOverviewPackageDrop()
 		{
-			var client = new BalikoBotClient(Options);
+			var client = new BalikoBotCeskaPostaClient(Options);
 
 			// 1. pridani baliku do svozu
 			const string eid = "123001";
@@ -60,7 +60,7 @@ namespace BalikoBot.Tests
 				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ")
 				.AddDobirka(12300m, eid, 12345.85m, "CZK");
 
-			var r1 = await client.Add(Carriers.cp, eid, "DR", data);
+			var r1 = await client.Add(eid, "DR", data);
 			Assert.NotNull(r1);
 			Assert.NotEmpty(r1.CarrierId);
 			Assert.True(r1.PackageId > 0);
@@ -68,7 +68,7 @@ namespace BalikoBot.Tests
 			Assert.True(r1.Status > 0);
 
 			// 2. overeni baliku
-			var all = await client.Overview(Carriers.cp);
+			var all = await client.Overview();
 			Assert.NotEmpty(all);
 			Assert.Contains(all, x => x.EshopId == eid);
 			Assert.Contains(all, x => x.CarrierId == r1.CarrierId);
@@ -76,21 +76,21 @@ namespace BalikoBot.Tests
 			Assert.Contains(all, x => x.LabelUrl == r1.LabelUrl);
 
 			// 3. vsechny informace o baliku
-			var pkg = await client.Package(Carriers.cp, r1.PackageId);
+			var pkg = await client.Package(r1.PackageId);
 			Assert.NotNull(pkg);
 			Assert.Contains(pkg, x => x.Key == BalikoBotData.ESHOP_ID && x.Value.ToString() == eid);
 			Assert.Contains(pkg, x => x.Key == BalikoBotData.REC_EMAIL && x.Value.ToString() == "john@carter.com");
 			Assert.Contains(pkg, x => x.Key == BalikoBotData.REC_PHONE && x.Value.ToString() == "420777555666");
 
 			// 4. zruseni baliku ze svozu
-			var r2 = await client.Drop(Carriers.cp, r1.PackageId);
+			var r2 = await client.Drop(r1.PackageId);
 			Assert.Equal(200, r1.Status);
 		}
 
 		[Fact]
 		public async Task TestLabelOrder()
 		{
-			var client = new BalikoBotClient(Options);
+			var client = new BalikoBotCeskaPostaClient(Options);
 
 			// 1. pridani baliku do svozu
 			var data = new BalikoBotData()
@@ -98,15 +98,15 @@ namespace BalikoBot.Tests
 				.AddCena(1450m);
 
 			var eid = DateTime.Now.ToString("yyyyMMddHHmmss");
-			var r1 = await client.Add(Carriers.cp, eid, "DR", data);
+			var r1 = await client.Add(eid, "DR", data);
 
 			// 2. vyzvedne stitky
-			var l1 = await client.Labels(Carriers.cp, r1.PackageId);
+			var l1 = await client.Labels(r1.PackageId);
 			Assert.NotEmpty(l1.LabelUrl);
 			Assert.Equal(200, l1.Status);
 
 			// 3. objedna svoz
-			var o1 = await client.Order(Carriers.cp, r1.PackageId);
+			var o1 = await client.Order(r1.PackageId);
 			Assert.True(o1.OrderId > 0);
 			Assert.NotEmpty(o1.FileUrl);
 			Assert.NotEmpty(o1.HandoverUrl);
@@ -114,7 +114,7 @@ namespace BalikoBot.Tests
 			Assert.Equal(200, o1.Status);
 
 			// 4. informace ke konkretni objednavce svozu
-			var o2 = await client.OrderView(Carriers.cp, o1.OrderId);
+			var o2 = await client.OrderView(o1.OrderId);
 			Assert.True(o2.OrderId > 0);
 			Assert.NotEmpty(o2.PackageIds);
 		}
