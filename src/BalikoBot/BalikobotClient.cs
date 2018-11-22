@@ -15,25 +15,19 @@ namespace BalikoBot
 	/// <summary>
 	/// klinet BalikoBot (obecny)
 	/// </summary>
-	public abstract class BalikoBotClient
+	public class BalikoBotClient
 	{
 		public static readonly string API_SCHEMA = "https://";
 		public static readonly string API_URL_V1 = "api.balikobot.cz";
 		public static readonly string API_URL_V2 = "api.balikobot.cz/v2";
 
+		#region Constructor
+
 		private readonly Carriers _carrier;
 		private readonly string _username;
 		private readonly string _password;
 
-		#region Constructor
-
-		protected BalikoBotClient(Carriers carrier, string login, string password)
-		{
-			_carrier = carrier;
-			_username = login;
-			_password = password;
-		}
-		protected BalikoBotClient(Carriers carrier, IBalikoBotConfiguration config)
+		internal BalikoBotClient(Carriers carrier, IBalikoBotConfiguration config)
 		{
 			_carrier = carrier;
 			_username = config.Username;

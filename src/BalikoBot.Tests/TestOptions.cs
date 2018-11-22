@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BalikoBot;
-
-namespace BalikoBot.Tests
+﻿namespace BalikoBot.Tests
 {
 	/// <summary>
 	/// konfigurace UNIT testu BalikoBota
