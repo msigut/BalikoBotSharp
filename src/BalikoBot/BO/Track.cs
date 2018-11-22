@@ -12,13 +12,4 @@ namespace BalikoBot.BO
 		public string CarrierId { get; set; }
 		public IEnumerable<BalikoBotTrackItem> Items { get; set; }
 	}
-
-	/// <summary>
-	/// udalost ve sledovani
-	/// </summary>
-	public class BalikoBotTrackItem
-	{
-		public DateTime Date { get; set; }
-		public string Name { get; set; }
-	}
 }

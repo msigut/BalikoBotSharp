@@ -132,8 +132,7 @@ namespace BalikoBot.Tests
 			var tt = await client.TrackStatus(r1.CarrierId);
 			Assert.NotEmpty(tt);
 			var tt1 = tt.FirstOrDefault();
-			Assert.NotEqual(BalikoBotTrackStatuses.Cancelled, tt1.Status);
-			Assert.True(tt1.StatusId > 0);
+			Assert.True(tt1.StatusId >= -1);
 			Assert.NotEmpty(tt1.CarrierId);
 			Assert.NotEmpty(tt1.Text);
 		}
