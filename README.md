@@ -4,11 +4,11 @@ BalikoBot .NET Core Library (for netstandard2.0). By [BalikoBot](https://www.bal
 
 Supports
 - Dependency injection by Factory pattern `BalikoBotFactory`
-- `Add` Error messages and `Status` codes
+- Use `Add` Error messages and general `Status` codes of API
 
 **Config**
 
-Implement `IBalikoBotConfiguration` to your config file or use More in [BalikoBot.Tests](https://github.com/msigut/BalikoBotSharp/tree/master/src/BalikoBot.Tests) project, file: [TestOptions.cs](https://github.com/msigut/BalikoBotSharp/blob/master/src/BalikoBot.Tests/TestOptions.cs).
+Implement `IBalikoBotConfiguration` to your config file or use More in [BalikoBot.Tests](/src/BalikoBot.Tests) project, file: [TestOptions.cs](/src/BalikoBot.Tests/TestOptions.cs).
 ```
 public class TestOptions : IBalikoBotConfiguration
 {
@@ -24,7 +24,7 @@ _balikoBot = new BalikoBotClientFactory(options);
 
 **With Dependency injection**
 
-More in [BalikoBot.Tests](https://github.com/msigut/BalikoBotSharp/tree/master/src/BalikoBot.Tests) project, file: [TestFixture.cs](https://github.com/msigut/BalikoBotSharp/blob/master/src/BalikoBot.Tests/TestFixture.cs) and [BasicTest.cs](https://github.com/msigut/BalikoBotSharp/blob/master/src/BalikoBot.Tests/BasicTest.cs).
+More in [BalikoBot.Tests](/src/BalikoBot.Tests) project, file: [TestFixture.cs](/src/BalikoBot.Tests/TestFixture.cs) and [BasicTest.cs](/src/BalikoBot.Tests/BasicTest.cs).
 ```
 // DI configuration
 services.AddSingleton<IBalikoBotConfiguration>(Options);
