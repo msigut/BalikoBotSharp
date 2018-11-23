@@ -6,6 +6,32 @@ Supports
 - Dependency injection by Factory pattern `BalikoBotFactory`
 - `Add` Error messages and `Status` codes
 
+**Config**
+
+Implement `IBalikoBotConfiguration` to your config file.
+```
+public class TestOptions : IBalikoBotConfiguration
+{
+	public string Username { get; set; }
+	public string Password { get; set; }
+}
+```
+
+**Start**
+```
+_balikoBot = new BalikoBotClientFactory(options);
+```
+
+**With Dependency injection**
+```
+// DI configuration
+services.AddSingleton<IBalikoBotConfiguration>(Options);
+services.AddScoped<BalikoBotClientFactory>();
+
+// in constructor
+_balikoBot = test.Services.GetRequiredService<BalikoBotClientFactory>();
+```
+
 **Add**
 ```
 var data = new BalikoBotData(DateTime.Now.ToString("yyyyMMddHHmmss"), "8")
@@ -19,7 +45,7 @@ await _balikoBot.PplClient.Add(data);
 
 **Labels**
 ```
-await _balikoBot.CpClient.Labels(packageId)
+await _balikoBot.CpClient.Labels(packageId);
 ```
 
 **Order**
@@ -40,4 +66,12 @@ await _balikoBot.CpClient.Track(carrierId);
 **TrackStatus**
 ```
 await _balikoBot.CpClient.TrackStatus(carrierId);
+```
+
+## Other
+```
+await _balikoBot.CpClient.Services();
+await _balikoBot.CpClient.Countries4service("DR");
+await _balikoBot.PplClient.ZipCodes("3");
+await _balikoBot.ZasilkovnaClient.Branches();
 ```
