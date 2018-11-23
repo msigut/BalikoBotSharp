@@ -9,7 +9,7 @@ namespace BalikoBot.BO
 	/// </summary>
 	public class BalikoBotService
 	{
-		public string Type { get; set; }
+		public string ServiceType { get; set; }
 		public string Description { get; set; }
 	}
 }

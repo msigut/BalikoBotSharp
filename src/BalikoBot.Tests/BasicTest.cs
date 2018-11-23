@@ -40,12 +40,23 @@ namespace BalikoBot.Tests
 		}
 
 		[Fact]
+		public async Task TestZipCodes()
+		{
+			var r2 = await _balikoBot.PplClient.ZipCodes("3");
+			Assert.NotNull(r2);
+			Assert.Equal("3", r2.ServiceType);
+			Assert.Equal(ZipTypes.Zip, r2.Type);
+			Assert.Contains(r2.Items, x => x.Country == "CZ");
+			Assert.Contains(r2.Items, x => !string.IsNullOrEmpty(x.Zip));
+		}
+
+		[Fact]
 		public async Task TestAddOverviewPackageDrop()
 		{
 			// 1. pridani baliku do svozu
 			const string eid = "123001";
 			var data = new BalikoBotData(eid, "DR")
-				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ")
+				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackï¿½ho 12", "Praha 9", "19000", "CZ")
 				.AddDobirka(12300m, eid, 12345.85m, "CZK");
 
 			var res = await _balikoBot.CpClient.Add(data);
@@ -56,7 +67,7 @@ namespace BalikoBot.Tests
 			Assert.NotEmpty(r1.CarrierId);
 			Assert.True(r1.PackageId > 0);
 			Assert.NotEmpty(r1.LabelUrl);
-			Assert.True(r1.Status > 0);
+			Assert.True(r1.Status == 200 || r1.Status == 208);
 
 			// 2. overeni baliku
 			var all = await _balikoBot.CpClient.Overview();
@@ -83,12 +94,13 @@ namespace BalikoBot.Tests
 		{
 			// 1. pridani baliku do svozu
 			var data = new BalikoBotData(DateTime.Now.ToString("yyyyMMddHHmmss"), "DR")
-				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ")
+				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackï¿½ho 12", "Praha 9", "19000", "CZ")
 				.AddCena(1450m);
 
 			var res = await _balikoBot.CpClient.Add(data);
 			Assert.NotEmpty(res);
 			var r1 = res.FirstOrDefault();
+			Assert.Equal(200, r1.Status);
 
 			// 2. vyzvedne stitky
 			var l1 = await _balikoBot.CpClient.Labels(r1.PackageId);
@@ -124,15 +136,46 @@ namespace BalikoBot.Tests
 		}
 
 		[Fact]
-		public async Task TestError()
+		public async Task TestSizeWeight()
 		{
-			// 1. pridani baliku do svozu; chybi cena
-			var data = new BalikoBotData("123001", "DR").AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ");
-			var ex = await Assert.ThrowsAsync<BalikoBotAddException>(async () => await _balikoBot.CpClient.Add(data));
+			// 1. PPL - Firemni balik
+			var data = new BalikoBotData(DateTime.Now.ToString("yyyyMMddHHmmss"), "8")
+				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackï¿½ho 12", "Praha 9", "19000", "CZ")
+				.AddCena(1450m)
+				.AddRozmeryHmotnost(40.5m, 60m, 30m, 2.5m)
+				.AddSafe(BalikoBotData.REC_FIRM, "Moje s.r.o.");
+
+			var res = await _balikoBot.PplClient.Add(data);
+			Assert.NotEmpty(res);
+			var r1 = res.FirstOrDefault();
+			Assert.Equal(200, r1.Status);
+
+			// 2. vsechny informace o baliku (rozmery a hmotnost jsou zaokrouhlovany)
+			var pkg = await _balikoBot.PplClient.Package(r1.PackageId);
+			Assert.NotNull(pkg);
+			Assert.Contains(pkg, x => x.Key == BalikoBotData.WIDTH && x.Value.ToString() == "40.00");
+			Assert.Contains(pkg, x => x.Key == BalikoBotData.LENGTH && x.Value.ToString() == "60.00");
+			Assert.Contains(pkg, x => x.Key == BalikoBotData.HEIGHT && x.Value.ToString() == "30.00");
+			Assert.Contains(pkg, x => x.Key == BalikoBotData.WEIGHT && x.Value.ToString() == "2.00");
+		}
+
+		[Fact]
+		public async Task TestCheckError()
+		{
+			// 1. kontrola baliku do svozu; chybi jmeno
+			var data = new BalikoBotData("123001", "8").AddDoruceni("john@carter.com", "+420777555666", "", "Palackï¿½ho 12", "Praha 9", "19000", "CZ");
+			var ex = await Assert.ThrowsAsync<BalikoBotAddException>(async () => await _balikoBot.PplClient.Check(data));
+			Assert.NotEmpty(ex.Errors);
+			Assert.Contains(ex.Errors, x => x.Type == 406 && x.Attribute == BalikoBotData.REC_NAME);
+			Assert.Contains(ex.Errors, x => x.Type == 406 && x.Attribute == BalikoBotData.REC_FIRM);
+
+			// 2. pridani baliku do svozu; chybi cena
+			data = new BalikoBotData("123001", "DR").AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackï¿½ho 12", "Praha 9", "19000", "CZ");
+			ex = await Assert.ThrowsAsync<BalikoBotAddException>(async () => await _balikoBot.CpClient.Add(data));
 			Assert.NotEmpty(ex.Errors);
 			Assert.Contains(ex.Errors, x => x.Type == 406 && x.Attribute == BalikoBotData.PRICE);
 
-			// 2. track neexistujici zasilky (testovaci prostredi posila vysledek vzdy, nelze otestovat)
+			// 3. track neexistujici zasilky (testovaci prostredi posila vysledek vzdy, nelze otestovat)
 			//var t = await client.Track("4613245");
 			//Assert.NotEmpty(t);
 		}

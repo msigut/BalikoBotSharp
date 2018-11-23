@@ -44,10 +44,13 @@ namespace BalikoBot
 			var json = await GetAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/services");
 
 			var services = (JObject)json["service_types"];
+			if (services == null)
+				throw new InvalidOperationException("JSON: service_types");
+
 			return services.Properties()
 				.Select(x => new BalikoBotService()
 				{
-					Type = x.Name,
+					ServiceType = x.Name,
 					Description = x.Value.ToString()
 				})
 				.ToArray();
@@ -58,12 +61,23 @@ namespace BalikoBot
 		/// </summary>
 		public async Task<IEnumerable<string>> GetCountries4service(string serviceType)
 		{
+			if (string.IsNullOrEmpty(serviceType))
+				throw new ArgumentException(nameof(serviceType));
+
 			var json = await GetAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/countries4service");
 
 			var services = (JObject)json["service_types"];
+			if (services == null)
+				throw new InvalidOperationException("JSON: service_types");
+
 			var service = services.ObjectValuesOfProperties().FirstOrDefault(x => x.Value<string>("service_type") == serviceType);
+			if (service == null)
+				throw new InvalidOperationException($"JSON: service_types == '{serviceType}'");
 
 			var countries = (JObject)service["countries"];
+			if (countries == null)
+				throw new InvalidOperationException("JSON: countries");
+
 			return countries.StringValuesOfProperties().ToArray();
 		}
 
@@ -83,6 +97,41 @@ namespace BalikoBot
 			});
 
 			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/add", data);
+
+			int status = (int)json["status"];
+			// OK (200) nebo OK, uz drive ulozeno (208)
+			if (status == 200 || status == 208)
+			{
+				return json.ForEachValuesOfProperties((o, x) => new BalikoBotPackage()
+				{
+					EshopId = (string)datas[x][BalikoBotData.EID],
+
+					CarrierId = (string)o["carrier_id"],
+					PackageId = (int)o["package_id"],
+					LabelUrl = (string)o["label_url"],
+					Status = (int)o["status"],
+				});
+			}
+			else
+			{
+				// chyba
+				throw new BalikoBotAddException(datas, json);
+			}
+		}
+
+		/// <summary>
+		/// K (obdoba metody ADD jen se data neuloží do systému, ale zkontrolují se a API vrátí zda jsou v pořádku, případně seznam chyb)		/// </summary>
+		public async Task<IEnumerable<BalikoBotPackage>> Check(params BalikoBotData[] datas)
+		{
+			if (datas == null || datas.Length == 0)
+				throw new ArgumentException(nameof(datas));
+
+			var data = datas.FromArrayToJArray((x, arr) =>
+			{
+				arr.Add(JObject.FromObject(x));
+			});
+
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/check", data);
 
 			int status = (int)json["status"];
 			// OK (200) nebo OK, uz drive ulozeno (208)
@@ -278,6 +327,29 @@ namespace BalikoBot
 			if (ids != null)
 			{
 				result.PackageIds = ids.ObjectValuesOfProperties().ParseInt();
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Vrací výčet PSČ, na které se dají posílat zásilky u konkrétní služby.
+		/// Tato PSČ jsou platná pro atribut rec_zip v metodě ADD.
+		/// </summary>
+		public async Task<BalikoBotZipCode> ZipCodes(string serviceType)
+		{
+			if (string.IsNullOrEmpty(serviceType))
+				throw new ArgumentException(nameof(serviceType));
+			
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/zipcodes/{serviceType}");
+
+			var result = json.ToObject<BalikoBotZipCode>();
+
+			// prevod ids z nestandardni 'dictionary' formy na bezne pole na vystup
+			var zips = (JObject)json["zip_codes"];
+			if (zips != null)
+			{
+				result.Items = zips.ForEachValuesOfProperties((o, x) => o.ToObject<BalikoBotZipCodeItem>());
 			}
 
 			return result;
