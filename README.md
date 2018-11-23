@@ -85,7 +85,7 @@ await _balikoBot.CpClient.Track(carrierId);
 await _balikoBot.CpClient.TrackStatus(carrierId);
 ```
 
-## Other
+### Other
 ```
 await _balikoBot.CpClient.Services();
 await _balikoBot.CpClient.Countries4service("DR");
