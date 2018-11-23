@@ -22,20 +22,20 @@ namespace BalikoBot.Tests
 		[Fact]
 		public async Task TestServices()
 		{
-			var r1 = await _balikoBot.CpClient.GetServices();
+			var r1 = await _balikoBot.CpClient.Services();
 			Assert.NotEmpty(r1);
 
-			var r2 = await _balikoBot.PplClient.GetServices();
+			var r2 = await _balikoBot.PplClient.Services();
 			Assert.NotEmpty(r2);
 		}
 
 		[Fact]
 		public async Task TestCountries4service()
 		{
-			var r2 = await _balikoBot.PplClient.GetCountries4service("2");
+			var r2 = await _balikoBot.PplClient.Countries4service("2");
 			Assert.NotEmpty(r2);
 
-			var r1 = await _balikoBot.CpClient.GetCountries4service("DR");
+			var r1 = await _balikoBot.CpClient.Countries4service("DR");
 			Assert.Single(r1);
 		}
 

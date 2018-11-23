@@ -41,7 +41,7 @@ namespace BalikoBot
 		/// <summary>
 		/// sluzby podle dopravce
 		/// </summary>
-		public async Task<IEnumerable<BalikoBotService>> GetServices()
+		public async Task<IEnumerable<BalikoBotService>> Services()
 		{
 			var json = await GetAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/services");
 
@@ -61,7 +61,7 @@ namespace BalikoBot
 		/// <summary>
 		/// Seznam států, do kterých lze zasílat skrze jednotlivé služby přepravce
 		/// </summary>
-		public async Task<IEnumerable<string>> GetCountries4service(string serviceType)
+		public async Task<IEnumerable<string>> Countries4service(string serviceType)
 		{
 			if (string.IsNullOrEmpty(serviceType))
 				throw new ArgumentException(nameof(serviceType));
