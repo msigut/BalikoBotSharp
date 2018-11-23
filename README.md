@@ -43,6 +43,21 @@ var data = new BalikoBotData(DateTime.Now.ToString("yyyyMMddHHmmss"), "8")
 await _balikoBot.PplClient.Add(data);
 ```
 
+**Drop**
+```
+await _balikoBot.CpClient.Drop(r1.PackageId);
+```
+
+**Overview**
+```
+await _balikoBot.CpClient.Overview();
+```
+
+**Package**
+```
+await _balikoBot.CpClient.Package(packageId);
+```
+
 **Labels**
 ```
 await _balikoBot.CpClient.Labels(packageId);
