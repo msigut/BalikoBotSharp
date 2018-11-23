@@ -8,7 +8,7 @@ Supports
 
 **Config**
 
-Implement `IBalikoBotConfiguration` to your config file.
+Implement `IBalikoBotConfiguration` to your config file or use More in [BalikoBot.Tests](https://github.com/msigut/BalikoBotSharp/tree/master/src/BalikoBot.Tests) project, file: [TestOptions.cs](https://github.com/msigut/BalikoBotSharp/blob/master/src/BalikoBot.Tests/TestOptions.cs).
 ```
 public class TestOptions : IBalikoBotConfiguration
 {
@@ -23,6 +23,8 @@ _balikoBot = new BalikoBotClientFactory(options);
 ```
 
 **With Dependency injection**
+
+More in [BalikoBot.Tests](https://github.com/msigut/BalikoBotSharp/tree/master/src/BalikoBot.Tests) project, file: [TestFixture.cs](https://github.com/msigut/BalikoBotSharp/blob/master/src/BalikoBot.Tests/TestFixture.cs) and [BasicTest.cs](https://github.com/msigut/BalikoBotSharp/blob/master/src/BalikoBot.Tests/BasicTest.cs).
 ```
 // DI configuration
 services.AddSingleton<IBalikoBotConfiguration>(Options);
