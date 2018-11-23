@@ -3,12 +3,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BalikoBot
 {
@@ -317,7 +319,6 @@ namespace BalikoBot
 		public async Task<BalikoBotOrder> OrderView(int? orderId = null)
 		{
 			var url = orderId.HasValue ? $"/{orderId}" : null;
-
 			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/orderview{url}");
 
 			var result = json.ToObject<BalikoBotOrder>();
@@ -340,7 +341,7 @@ namespace BalikoBot
 		{
 			if (string.IsNullOrEmpty(serviceType))
 				throw new ArgumentException(nameof(serviceType));
-			
+
 			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/zipcodes/{serviceType}");
 
 			var result = json.ToObject<BalikoBotZipCode>();
@@ -355,7 +356,29 @@ namespace BalikoBot
 			return result;
 		}
 
+		/// <summary>
+		/// Vrací seznam poboček, na které se dají posílat zásilky u konkrétní služby.
+		/// Čísla poboček se poté dají předat do atributu branch_id v metodě ADD.
+		/// </summary>
+		public async Task<BalikoBotBranch> Branches(string serviceType = null)
+		{
+			var url = !string.IsNullOrEmpty(serviceType) ? $"/{serviceType}" : null;
+			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/branches{url}");
+
+			var result = json.ToObject<BalikoBotBranch>();
+
+			// prevod ids z nestandardni 'dictionary' formy na bezne pole na vystup
+			var branches = (JObject)json["branches"];
+			if (branches != null)
+			{
+				result.Items = branches.ForEachValuesOfProperties((o, x) => o.ToObject<BalikoBotBranchItem>());
+			}
+
+			return result;
+		}
+
 		#region Helpers
+
 		private async Task<JObject> GetAsync(string url)
 		{
 			return await GetClientInternal(async (client) => await client.GetAsync(url));
@@ -379,10 +402,23 @@ namespace BalikoBot
 			var response = await todo(client);
 			var content = await response.Content.ReadAsStringAsync();
 
-			var unescaped = Regex.Unescape(content);
+			var unescaped = UnescapeUnicode(content);
 			var json = JObject.Parse(unescaped);
+
 			return json;
 		}
+
+		/// <summary>
+		/// unescape unicode string in C#
+		/// </summary>
+		/// <remarks>
+		/// https://stackoverflow.com/questions/8558671/how-to-unescape-unicode-string-in-c-sharp
+		/// </remarks>
+		private string UnescapeUnicode(string str)
+		{
+			return Regex.Replace(str, @"\\[Uu]([0-9A-Fa-f]{4})", m => char.ToString((char)ushort.Parse(m.Groups[1].Value, NumberStyles.AllowHexSpecifier)));
+		}
+
 		#endregion
 	}
 }

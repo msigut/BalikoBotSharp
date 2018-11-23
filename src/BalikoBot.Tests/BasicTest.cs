@@ -42,12 +42,25 @@ namespace BalikoBot.Tests
 		[Fact]
 		public async Task TestZipCodes()
 		{
-			var r2 = await _balikoBot.PplClient.ZipCodes("3");
-			Assert.NotNull(r2);
-			Assert.Equal("3", r2.ServiceType);
-			Assert.Equal(ZipTypes.Zip, r2.Type);
-			Assert.Contains(r2.Items, x => x.Country == "CZ");
-			Assert.Contains(r2.Items, x => !string.IsNullOrEmpty(x.Zip));
+			var r = await _balikoBot.PplClient.ZipCodes("3");
+			Assert.NotNull(r);
+			Assert.Equal("3", r.ServiceType);
+			Assert.Equal(ZipTypes.Zip, r.Type);
+			Assert.Contains(r.Items, x => x.Country == "CZ");
+			Assert.Contains(r.Items, x => !string.IsNullOrEmpty(x.Zip));
+		}
+
+		[Fact]
+		public async Task TestBranches()
+		{
+			var b = await _balikoBot.ZasilkovnaClient.Branches();
+			Assert.NotNull(b);
+			Assert.Contains(b.Items, x => x.BranchId > 0);
+			Assert.Contains(b.Items, x => x.Name == "Jablonec nad Nisou, Palackého LSC - IT Partner, IT Servis");
+			Assert.Contains(b.Items, x => x.Street == "Potoky 33");
+			Assert.Contains(b.Items, x => x.City == "Hanušovice");
+			Assert.Contains(b.Items, x => x.ZIP == "736 01");
+			Assert.Contains(b.Items, x => x.Country == "CZ");
 		}
 
 		[Fact]

@@ -6,17 +6,14 @@ using System.Text;
 namespace BalikoBot.BO
 {
 	/// <summary>
-	/// PSC (ZIP)
+	/// pobocka
 	/// </summary>
 	[DataContract]
-	public class BalikoBotZipCode : BalikoBotResult
+	public class BalikoBotBranch : BalikoBotResult
 	{
 		[DataMember(Name = "service_type")]
 		public string ServiceType { get; set; }
 
-		[DataMember(Name = "type")]
-		public ZipTypes Type { get; set; }
-
-		public IEnumerable<BalikoBotZipCodeItem> Items { get; set; }
+		public IEnumerable<BalikoBotBranchItem> Items { get; set; }
 	}
 }

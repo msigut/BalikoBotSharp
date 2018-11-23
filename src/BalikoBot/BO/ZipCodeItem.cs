@@ -6,7 +6,7 @@ using System.Text;
 namespace BalikoBot.BO
 {
 	/// <summary>
-	/// udalost ve sledovani
+	/// konkretni PSC (ZIP)
 	/// </summary>
 	[DataContract]
 	public class BalikoBotZipCodeItem

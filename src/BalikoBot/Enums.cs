@@ -87,4 +87,22 @@ namespace BalikoBot
 		[DataMember(Name = "city")]
 		City,
 	}
+
+	/// <summary>
+	/// typ pobočky
+	/// </summary>
+	[DataContract]
+	public enum BranchTypes : int
+	{
+		/// <summary>
+		/// vydejni misto
+		/// </summary>
+		[DataMember(Name = "branch")]
+		Branch,
+		/// <summary>
+		/// sluzba
+		/// </summary>
+		[DataMember(Name = "service")]
+		Service,
+	}
 }
