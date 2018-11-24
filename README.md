@@ -5,7 +5,7 @@ BalikoBot .NET Core Library (for netstandard2.0). By [BalikoBot](https://www.bal
 Supports
 - Dependency injection by Factory pattern **BalikoBotFactory**
 - Use **Add** function error messages and general **Status** codes of API
-- 
+- All common API functions by reference
 
 **Config**
 
