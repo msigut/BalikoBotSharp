@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageProjectUrl>https://github.com/msigut/BalikoBotSharp</PackageProjectUrl>
+    <Authors>Martin Šigut</Authors>
+    <Company>Algorim s.r.o.</Company>
+    <Product>BalikoBotSharp</Product>
+    <Description>BalikoBot service API .NET Core Standard client</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/msigut/BalikoBotSharp/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/msigut/BalikoBotSharp</RepositoryUrl>
+    <PackageTags>BalikoBot</PackageTags>
+    <PackageIconUrl>https://www.balikobot.cz/assets/favicon/favicon.ico</PackageIconUrl>
+    <Copyright>Martin Šigut, Algorim</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
