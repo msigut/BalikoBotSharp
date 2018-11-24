@@ -13,6 +13,8 @@
     <PackageIconUrl>https://www.balikobot.cz/assets/favicon/favicon.ico</PackageIconUrl>
     <Copyright>Martin Šigut, Algorim</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>BalikoBotSharp</PackageId>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
