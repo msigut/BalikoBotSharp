@@ -1,4 +1,5 @@
 ﻿using BalikoBot.BO;
+using BalikoBot.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -402,21 +403,10 @@ namespace BalikoBot
 			var response = await todo(client);
 			var content = await response.Content.ReadAsStringAsync();
 
-			var unescaped = UnescapeUnicode(content);
+			var unescaped = UnicodeTools.Unescape(content);
 			var json = JObject.Parse(unescaped);
 
 			return json;
-		}
-
-		/// <summary>
-		/// unescape unicode string in C#
-		/// </summary>
-		/// <remarks>
-		/// https://stackoverflow.com/questions/8558671/how-to-unescape-unicode-string-in-c-sharp
-		/// </remarks>
-		private string UnescapeUnicode(string str)
-		{
-			return Regex.Replace(str, @"\\[Uu]([0-9A-Fa-f]{4})", m => char.ToString((char)ushort.Parse(m.Groups[1].Value, NumberStyles.AllowHexSpecifier)));
 		}
 
 		#endregion
