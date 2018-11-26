@@ -30,6 +30,7 @@ More in [BalikoBot.Tests](/src/BalikoBot.Tests) project, file: [TestFixture.cs](
 // DI configuration
 services.AddSingleton<IBalikoBotConfiguration>(Options);
 services.AddScoped<BalikoBotClientFactory>();
+services.AddHttpClient();
 
 // in constructor
 _balikoBot = test.Services.GetRequiredService<BalikoBotClientFactory>();
