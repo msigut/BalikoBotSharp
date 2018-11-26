@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace BalikoBot
 {
@@ -6,11 +7,13 @@ namespace BalikoBot
 	{
 		#region DI
 
-		private IBalikoBotConfiguration _config;
+		private readonly IBalikoBotConfiguration _config;
+		private readonly IHttpClientFactory _clientFactory;
 
-		public BalikoBotClientFactory(IBalikoBotConfiguration config)
+		public BalikoBotClientFactory(IBalikoBotConfiguration config, IHttpClientFactory clientFactory)
 		{
 			_config = config ?? throw new ArgumentNullException(nameof(config));
+			_clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
 		}
 
 		#endregion
@@ -18,37 +21,37 @@ namespace BalikoBot
 		#region Properties
 
 		private BalikoBotClient _cpClient;
-		public BalikoBotClient CpClient => _cpClient ?? (_cpClient = new BalikoBotClient(Carriers.cp, _config));
+		public BalikoBotClient CpClient => _cpClient ?? (_cpClient = new BalikoBotClient(Carriers.cp, _config, _clientFactory));
 
 		private BalikoBotClient _dpdClient;
-		public BalikoBotClient DpdClient => _dpdClient ?? (_dpdClient = new BalikoBotClient(Carriers.dpd, _config));
+		public BalikoBotClient DpdClient => _dpdClient ?? (_dpdClient = new BalikoBotClient(Carriers.dpd, _config, _clientFactory));
 
 		private BalikoBotClient _geisClient;
-		public BalikoBotClient GeisClient => _geisClient ?? (_geisClient = new BalikoBotClient(Carriers.geis, _config));
+		public BalikoBotClient GeisClient => _geisClient ?? (_geisClient = new BalikoBotClient(Carriers.geis, _config, _clientFactory));
 
 		private BalikoBotClient _glsClient;
-		public BalikoBotClient GlsClient => _glsClient ?? (_glsClient = new BalikoBotClient(Carriers.gls, _config));
+		public BalikoBotClient GlsClient => _glsClient ?? (_glsClient = new BalikoBotClient(Carriers.gls, _config, _clientFactory));
 
 		private BalikoBotClient _intimeClient;
-		public BalikoBotClient IntimeClient => _intimeClient ?? (_intimeClient = new BalikoBotClient(Carriers.intime, _config));
+		public BalikoBotClient IntimeClient => _intimeClient ?? (_intimeClient = new BalikoBotClient(Carriers.intime, _config, _clientFactory));
 
 		private BalikoBotClient _pbhClient;
-		public BalikoBotClient PbhClient => _pbhClient ?? (_pbhClient = new BalikoBotClient(Carriers.pbh, _config));
+		public BalikoBotClient PbhClient => _pbhClient ?? (_pbhClient = new BalikoBotClient(Carriers.pbh, _config, _clientFactory));
 
 		private BalikoBotClient _pplClient;
-		public BalikoBotClient PplClient => _pplClient ?? (_pplClient = new BalikoBotClient(Carriers.ppl, _config));
+		public BalikoBotClient PplClient => _pplClient ?? (_pplClient = new BalikoBotClient(Carriers.ppl, _config, _clientFactory));
 
 		private BalikoBotClient _spClient;
-		public BalikoBotClient SpClient => _spClient ?? (_spClient = new BalikoBotClient(Carriers.sp, _config));
+		public BalikoBotClient SpClient => _spClient ?? (_spClient = new BalikoBotClient(Carriers.sp, _config, _clientFactory));
 
 		private BalikoBotClient _toptransClient;
-		public BalikoBotClient ToptransClient => _toptransClient ?? (_toptransClient = new BalikoBotClient(Carriers.toptrans, _config));
+		public BalikoBotClient ToptransClient => _toptransClient ?? (_toptransClient = new BalikoBotClient(Carriers.toptrans, _config, _clientFactory));
 
 		private BalikoBotClient _ulozenkaClient;
-		public BalikoBotClient UlozenkaClient => _ulozenkaClient ?? (_ulozenkaClient = new BalikoBotClient(Carriers.ulozenka, _config));
+		public BalikoBotClient UlozenkaClient => _ulozenkaClient ?? (_ulozenkaClient = new BalikoBotClient(Carriers.ulozenka, _config, _clientFactory));
 
 		private BalikoBotClient _zasilkovnaClient;
-		public BalikoBotClient ZasilkovnaClient => _zasilkovnaClient ?? (_zasilkovnaClient = new BalikoBotClient(Carriers.zasilkovna, _config));
+		public BalikoBotClient ZasilkovnaClient => _zasilkovnaClient ?? (_zasilkovnaClient = new BalikoBotClient(Carriers.zasilkovna, _config, _clientFactory));
 
 		#endregion
 

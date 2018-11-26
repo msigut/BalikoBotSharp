@@ -35,6 +35,7 @@ namespace BalikoBot.Tests
 			var services = new ServiceCollection();
 			services.AddSingleton<IBalikoBotConfiguration>(Options);
 			services.AddScoped<BalikoBotClientFactory>();
+			services.AddHttpClient();
 			Services = services.BuildServiceProvider();
 		}
 

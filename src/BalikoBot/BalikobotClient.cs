@@ -28,12 +28,14 @@ namespace BalikoBot
 		private readonly Carriers _carrier;
 		private readonly string _username;
 		private readonly string _password;
+		private readonly IHttpClientFactory _clientFactory;
 
-		internal BalikoBotClient(Carriers carrier, IBalikoBotConfiguration config)
+		internal BalikoBotClient(Carriers carrier, IBalikoBotConfiguration config, IHttpClientFactory clientFactory)
 		{
 			_carrier = carrier;
 			_username = config.Username;
 			_password = config.Password;
+			_clientFactory = clientFactory;
 		}
 
 		#endregion
@@ -394,29 +396,17 @@ namespace BalikoBot
 
 		private async Task<JObject> GetClientInternal(Func<HttpClient, Task<HttpResponseMessage>> todo)
 		{
-			var client = new HttpClient();
+			var client = _clientFactory.CreateClient("balikobot");
+
 			var byteArray = Encoding.ASCII.GetBytes($"{_username}:{_password}");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			var response = await todo(client);
 			var content = await response.Content.ReadAsStringAsync();
-
-			var unescaped = UnescapeUnicode(content);
-			var json = JObject.Parse(unescaped);
+			var json = JObject.Parse(content);
 
 			return json;
-		}
-
-		/// <summary>
-		/// unescape unicode string in C#
-		/// </summary>
-		/// <remarks>
-		/// https://stackoverflow.com/questions/8558671/how-to-unescape-unicode-string-in-c-sharp
-		/// </remarks>
-		private string UnescapeUnicode(string str)
-		{
-			return Regex.Replace(str, @"\\[Uu]([0-9A-Fa-f]{4})", m => char.ToString((char)ushort.Parse(m.Groups[1].Value, NumberStyles.AllowHexSpecifier)));
 		}
 
 		#endregion
