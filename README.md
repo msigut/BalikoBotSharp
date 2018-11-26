@@ -19,8 +19,10 @@ public class TestOptions : IBalikoBotConfiguration
 ```
 
 **Start**
+
+Use **IBalikoBotConfiguration** and **IHttpClientFactory** for common constructor call.
 ```
-_balikoBot = new BalikoBotClientFactory(options);
+_balikoBot = new BalikoBotClientFactory(options, clientFactory);
 ```
 
 **With Dependency injection**
