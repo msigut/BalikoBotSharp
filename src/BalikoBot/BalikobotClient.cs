@@ -1,16 +1,13 @@
-﻿using BalikoBot.BO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
+using BalikoBot.BO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BalikoBot
 {
@@ -102,7 +99,7 @@ namespace BalikoBot
 
 			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/add", data);
 
-			int status = (int)json["status"];
+			var status = (int)json["status"];
 			// OK (200) nebo OK, uz drive ulozeno (208)
 			if (status == 200 || status == 208)
 			{
@@ -137,7 +134,7 @@ namespace BalikoBot
 
 			var json = await PostAsync($"{API_SCHEMA}{API_URL_V1}/{_carrier}/check", data);
 
-			int status = (int)json["status"];
+			var status = (int)json["status"];
 			// OK (200) nebo OK, uz drive ulozeno (208)
 			if (status == 200 || status == 208)
 			{
