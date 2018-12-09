@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace BalikoBot
 	{
 		internal static IEnumerable<JToken> ObjectValuesOfProperties(this JObject o)
 		{
-			Func<string, bool> tryParse = (s) => int.TryParse(s, out int result);
+			Func<string, bool> tryParse = (s) => int.TryParse(s, out var result);
 
 			return o.Properties().Where(x => tryParse(x.Name)).Select(x => x.Value);
 		}
@@ -30,7 +30,7 @@ namespace BalikoBot
 		{
 			var result = new JArray();
 
-			foreach (T item in items)
+			foreach (var item in items)
 				todo(item, result);
 
 			return result;
@@ -39,8 +39,7 @@ namespace BalikoBot
 		internal static IEnumerable<T> ForEachValuesOfProperties<T>(this JObject os, Func<JObject, int, T> todo)
 		{
 			var list = new List<T>();
-
-			int x = 0;
+			var x = 0;
 			foreach (JObject o in os.ObjectValuesOfProperties())
 			{
 				list.Add(todo(o, x));
