@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 
 namespace BalikoBot
@@ -50,6 +50,9 @@ namespace BalikoBot
 		private BalikoBotClient _ulozenkaClient;
 		public BalikoBotClient UlozenkaClient => _ulozenkaClient ?? (_ulozenkaClient = new BalikoBotClient(Carriers.ulozenka, _config, _clientFactory));
 
+		private BalikoBotClient _upsClient;
+		public BalikoBotClient UpsClient => _upsClient ?? (_upsClient = new BalikoBotClient(Carriers.ups, _config, _clientFactory));
+
 		private BalikoBotClient _zasilkovnaClient;
 		public BalikoBotClient ZasilkovnaClient => _zasilkovnaClient ?? (_zasilkovnaClient = new BalikoBotClient(Carriers.zasilkovna, _config, _clientFactory));
 
@@ -88,6 +91,9 @@ namespace BalikoBot
 
 				case Carriers.ulozenka:
 					return UlozenkaClient;
+
+				case Carriers.ups:
+					return UpsClient;
 
 				case Carriers.zasilkovna:
 					return ZasilkovnaClient;
@@ -155,6 +161,11 @@ namespace BalikoBot
 					if (_ulozenkaClient != null)
 					{
 						_ulozenkaClient = null;
+					}
+
+					if (_upsClient != null)
+					{
+						_upsClient = null;
 					}
 
 					if (_zasilkovnaClient != null)

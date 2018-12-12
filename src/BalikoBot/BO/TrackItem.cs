@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 
 namespace BalikoBot.BO
 {
@@ -11,5 +9,6 @@ namespace BalikoBot.BO
 	{
 		public DateTime Date { get; set; }
 		public string Name { get; set; }
+		public int StatusId { get; set; }
 	}
 }

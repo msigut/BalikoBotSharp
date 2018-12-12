@@ -137,7 +137,11 @@ namespace BalikoBot.Tests
 			var t = await _balikoBot.CpClient.Track(r1.CarrierId);
 			Assert.NotEmpty(t);
 			var t1 = t.FirstOrDefault();
+			Assert.NotNull(t1);
 			Assert.NotEmpty(t1.Items);
+			Assert.True(t1.Items.First().Date != default);
+			Assert.True(t1.Items.First().StatusId >= -1 && t1.Items.First().StatusId <= 4);
+			Assert.NotEmpty(t1.Items.First().Name);
 
 			// 6. track status
 			var tt = await _balikoBot.CpClient.TrackStatus(r1.CarrierId);

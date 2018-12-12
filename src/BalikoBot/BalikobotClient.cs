@@ -204,6 +204,7 @@ namespace BalikoBot
 				{
 					Date = (DateTime)oo["date"],
 					Name = (string)oo["name"],
+					StatusId = (int)oo["status_id"],
 				})
 			});
 		}

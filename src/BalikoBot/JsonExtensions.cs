@@ -1,8 +1,7 @@
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace BalikoBot
 {
@@ -13,9 +12,9 @@ namespace BalikoBot
 	{
 		internal static IEnumerable<JToken> ObjectValuesOfProperties(this JObject o)
 		{
-			Func<string, bool> tryParse = (s) => int.TryParse(s, out var result);
+			bool TryParse(string s) => int.TryParse(s, out var result);
 
-			return o.Properties().Where(x => tryParse(x.Name)).Select(x => x.Value);
+			return o.Properties().Where(x => TryParse(x.Name)).Select(x => x.Value);
 		}
 		internal static IEnumerable<string> StringValuesOfProperties(this JObject o)
 		{

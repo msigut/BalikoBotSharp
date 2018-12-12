@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
@@ -54,6 +54,10 @@ namespace BalikoBot
 		/// Uloženka s.r.o.
 		/// </summary>
 		ulozenka,
+		/// <summary>
+		/// UPS
+		/// </summary>
+		ups,
 		/// <summary>
 		/// Zásilkovna s.r.o.
 		/// </summary>
