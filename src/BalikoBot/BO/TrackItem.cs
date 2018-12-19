@@ -9,6 +9,7 @@ namespace BalikoBot.BO
 	{
 		public DateTime Date { get; set; }
 		public string Name { get; set; }
+		public BalikoBotTrackStatuses Status { get; set; }
 		public int StatusId { get; set; }
 	}
 }

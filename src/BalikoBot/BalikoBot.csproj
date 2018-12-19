@@ -14,7 +14,7 @@
     <Copyright>Martin Šigut, Algorim</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>BalikoBotSharp</PackageId>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 

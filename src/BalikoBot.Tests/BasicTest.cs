@@ -141,6 +141,7 @@ namespace BalikoBot.Tests
 			Assert.NotEmpty(t1.Items);
 			Assert.True(t1.Items.First().Date != default);
 			Assert.True(t1.Items.First().StatusId >= -1 && t1.Items.First().StatusId <= 4);
+			Assert.True((int)t1.Items.First().Status >= -1 && (int)t1.Items.First().Status <= 4);
 			Assert.NotEmpty(t1.Items.First().Name);
 
 			// 6. track status

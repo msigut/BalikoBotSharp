@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace BalikoBot
 {
@@ -160,13 +160,33 @@ namespace BalikoBot
 		}
 
 		/// <summary>
-		/// prida udaje dobirky
+		/// prida rozmeny a hmotnost dobirky
 		/// </summary>
 		public BalikoBotData AddRozmeryHmotnost(decimal width, decimal length, decimal height, decimal weight)
 		{
 			AddSafe(WIDTH, width);
 			AddSafe(LENGTH, length);
 			AddSafe(HEIGHT, height);
+			AddSafe(WEIGHT, weight);
+			return this;
+		}
+
+		/// <summary>
+		/// prida rozmery dobirky
+		/// </summary>
+		public BalikoBotData AddRozmery(decimal width, decimal length, decimal height)
+		{
+			AddSafe(WIDTH, width);
+			AddSafe(LENGTH, length);
+			AddSafe(HEIGHT, height);
+			return this;
+		}
+
+		/// <summary>
+		/// prida udaje dobirky
+		/// </summary>
+		public BalikoBotData AddHmotnost(decimal weight)
+		{
 			AddSafe(WEIGHT, weight);
 			return this;
 		}
