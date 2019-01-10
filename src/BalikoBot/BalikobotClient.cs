@@ -29,10 +29,13 @@ namespace BalikoBot
 
 		internal BalikoBotClient(Carriers carrier, IBalikoBotConfiguration config, IHttpClientFactory clientFactory)
 		{
+			if (config == null)
+				throw new ArgumentNullException(nameof(config));
+		
 			_carrier = carrier;
 			_username = config.Username;
 			_password = config.Password;
-			_clientFactory = clientFactory;
+			_clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
 		}
 
 		#endregion

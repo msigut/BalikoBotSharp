@@ -23,6 +23,9 @@ namespace BalikoBot
 		private BalikoBotClient _cpClient;
 		public BalikoBotClient CpClient => _cpClient ?? (_cpClient = new BalikoBotClient(Carriers.cp, _config, _clientFactory));
 
+		private BalikoBotClient _dhlClient;
+		public BalikoBotClient DhlClient => _dhlClient ?? (_dhlClient = new BalikoBotClient(Carriers.dhl, _config, _clientFactory));
+
 		private BalikoBotClient _dpdClient;
 		public BalikoBotClient DpdClient => _dpdClient ?? (_dpdClient = new BalikoBotClient(Carriers.dpd, _config, _clientFactory));
 
@@ -64,6 +67,9 @@ namespace BalikoBot
 			{
 				case Carriers.cp:
 					return CpClient;
+
+				case Carriers.dhl:
+					return DhlClient;
 
 				case Carriers.dpd:
 					return DpdClient;

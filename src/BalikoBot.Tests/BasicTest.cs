@@ -197,5 +197,13 @@ namespace BalikoBot.Tests
 			//var t = await client.Track("4613245");
 			//Assert.NotEmpty(t);
 		}
+
+		[Fact]
+		public void TestFactory()
+		{
+			var carriers = Enum.GetValues(typeof(Carriers)).Cast<Carriers>();
+
+			Assert.All(carriers, x => Assert.NotNull(_balikoBot.Get(x)));
+		}
 	}
 }
