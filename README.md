@@ -1,6 +1,6 @@
 ## BalikoBotSharp
 
-BalikoBot .NET Standard 2.0 (netstandard2.0). By [BalikoBot](https://www.balikobot.cz/) documentation [1.845](https://www.balikobot.cz/dokumentace/Balikobot-dokumentace-API.pdf).
+BalikoBot .NET Standard 2.0 (netstandard2.0). By [BalikoBot](https://www.balikobot.cz/) documentation [1.853](https://www.balikobot.cz/dokumentace/Balikobot-dokumentace-API.pdf).
 
 Supports
 - Dependency injection by Factory pattern **BalikoBotFactory**
