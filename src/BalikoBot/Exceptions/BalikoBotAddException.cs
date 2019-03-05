@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -7,7 +6,7 @@ namespace BalikoBot
 	/// <summary>
 	/// vyjimka BalikoBotu na metode Add
 	/// </summary>
-	public class BalikoBotAddException : Exception
+	public class BalikoBotAddException : BalikoBotException
 	{
 		/// <summary>
 		/// chyby z API BalikoBotu

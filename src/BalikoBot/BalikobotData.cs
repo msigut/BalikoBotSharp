@@ -36,6 +36,10 @@ namespace BalikoBot
 		/// Poznámka přepravci (maximální délka 350 znaků, delší text se zkrátí)
 		/// </summary>
 		public static readonly string NOTE = "note";
+		/// <summary>
+		/// Popis obsahu zásilky (maximální délka 90 znaků)
+		/// </summary>
+		public static readonly string CONTENT = "content";
 
 		/// <summary>
 		/// E-mail příjemce.
@@ -158,6 +162,12 @@ namespace BalikoBot
 			AddSafe(PRICE, price);
 			return this;
 		}
+		public BalikoBotData AddCena(decimal price, string codCurrency)
+		{
+			AddSafe(PRICE, price);
+			AddSafe(COD_CURRENCY, codCurrency);
+			return this;
+		}
 
 		/// <summary>
 		/// prida rozmeny a hmotnost dobirky
@@ -188,6 +198,15 @@ namespace BalikoBot
 		public BalikoBotData AddHmotnost(decimal weight)
 		{
 			AddSafe(WEIGHT, weight);
+			return this;
+		}
+
+		/// <summary>
+		/// popis obsahu zasilky
+		/// </summary>
+		public BalikoBotData AddContent(string content)
+		{
+			AddSafe(CONTENT, content);
 			return this;
 		}
 

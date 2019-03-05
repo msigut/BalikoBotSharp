@@ -12,7 +12,7 @@ namespace BalikoBot.BO
 		public BranchTypes Type { get; set; }
 
 		[DataMember(Name = "id")]
-		public int BranchId { get; set; }
+		public string BranchId { get; set; }
 
 		[DataMember(Name = "zip")]
 		public string ZIP { get; set; }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -203,6 +204,7 @@ namespace BalikoBot
 			return json.ForEachValuesOfProperties((o, x) => new BalikoBotTrack()
 			{
 				CarrierId = carrierIds[x],
+				Status = (int?)o["status"],
 				Items = o.ForEachValuesOfProperties((oo, xx) => new BalikoBotTrackItem()
 				{
 					Date = (DateTime)oo["date"],
@@ -405,9 +407,13 @@ namespace BalikoBot
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			var response = await todo(client);
+			if (response.StatusCode != HttpStatusCode.OK)
+			{
+				throw new BalikoBotStatusException(response.StatusCode);
+			}
+
 			var content = await response.Content.ReadAsStringAsync();
 			var json = JObject.Parse(content);
-
 			return json;
 		}
 

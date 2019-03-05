@@ -39,9 +39,14 @@ namespace BalikoBot
 		{
 			var list = new List<T>();
 			var x = 0;
-			foreach (JObject o in os.ObjectValuesOfProperties())
+			foreach (var o in os.ObjectValuesOfProperties())
 			{
-				list.Add(todo(o, x));
+				switch (o)
+				{
+					case JObject jo:
+						list.Add(todo(jo, x));
+						break;
+				}
 				x++;
 			}
 
