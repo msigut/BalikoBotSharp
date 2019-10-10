@@ -87,7 +87,8 @@ namespace BalikoBot
 		}
 
 		/// <summary>
-		/// přidání balíku/balíků		/// </summary>
+		/// přidání balíku/balíků
+		/// </summary>
 		/// <remarks>
 		/// Přidává balík/balíky, které se odešlou ke svozu.
 		/// </remarks>
@@ -125,7 +126,8 @@ namespace BalikoBot
 		}
 
 		/// <summary>
-		/// K (obdoba metody ADD jen se data neuloží do systému, ale zkontrolují se a API vrátí zda jsou v pořádku, případně seznam chyb)		/// </summary>
+		/// K (obdoba metody ADD jen se data neuloží do systému, ale zkontrolují se a API vrátí zda jsou v pořádku, případně seznam chyb)
+		/// </summary>
 		public async Task<IEnumerable<BalikoBotPackage>> Check(params BalikoBotData[] datas)
 		{
 			if (datas == null || datas.Length == 0)
