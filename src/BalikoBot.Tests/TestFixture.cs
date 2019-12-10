@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
@@ -23,19 +23,19 @@ namespace BalikoBot.Tests
 		public TestFixture()
 		{
 			var configuration = new ConfigurationBuilder()
-				.SetBasePath(Directory.GetCurrentDirectory())
-				.AddJsonFile("appsettings.json")
+				.AddJsonFile("appsettings.json", true)
+				.AddJsonFile("appsettings.workspace.json", true)
 				.Build();
-				
+
 			// inicializace testovaci konfigurace
-			Options = new TestOptions();
-			configuration.GetSection("BalikoBot").Bind(Options);
+			Options = configuration.GetSection("BalikoBot").Get<TestOptions>();
 
 			// DI
 			var services = new ServiceCollection();
 			services.AddSingleton<IBalikoBotConfiguration>(Options);
 			services.AddScoped<BalikoBotClientFactory>();
 			services.AddHttpClient();
+
 			Services = services.BuildServiceProvider();
 		}
 

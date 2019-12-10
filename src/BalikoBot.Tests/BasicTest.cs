@@ -160,6 +160,27 @@ namespace BalikoBot.Tests
 		}
 
 		[Fact]
+		public async Task TestCena()
+		{
+			// 1. CP - Recomando
+			var data = new BalikoBotData(DateTime.Now.ToString("yyyyMMddHHmmss"), "rr")
+				.AddDoruceni("john@carter.com", "+420777555666", "John Carter", "Palackého 12", "Praha 9", "19000", "CZ")
+				.AddHmotnost(0.11m)
+				.AddCena(1759m);
+
+			var res = await _balikoBot.CpClient.Add(data);
+			Assert.NotEmpty(res);
+			var r1 = res.FirstOrDefault();
+			Assert.Equal(200, r1.Status);
+
+			// 2. vsechny informace o baliku (rozmery a hmotnost jsou zaokrouhlovany)
+			var pkg = await _balikoBot.CpClient.Package(r1.PackageId);
+			Assert.NotNull(pkg);
+			Assert.Contains(pkg, x => x.Key == BalikoBotData.PRICE && x.Value.ToString() == "1759.00");
+			Assert.Contains(pkg, x => x.Key == BalikoBotData.WEIGHT && x.Value.ToString() == "0.110");
+		}
+
+		[Fact]
 		public async Task TestSizeWeight()
 		{
 			// 1. PPL - Firemni balik
