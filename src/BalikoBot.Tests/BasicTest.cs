@@ -56,10 +56,10 @@ namespace BalikoBot.Tests
 			var b = await _balikoBot.ZasilkovnaClient.Branches();
 			Assert.NotNull(b);
 			Assert.Contains(b.Items, x => !string.IsNullOrEmpty(x.BranchId));
-			Assert.Contains(b.Items, x => x.Name == "Jablonec nad Nisou, Palackého LSC - IT Partner, IT Servis");
-			Assert.Contains(b.Items, x => x.Street == "Potoky 33");
-			Assert.Contains(b.Items, x => x.City == "Hanušovice");
-			Assert.Contains(b.Items, x => x.ZIP == "736 01");
+			Assert.Contains(b.Items, x => !string.IsNullOrEmpty(x.Name));
+			Assert.Contains(b.Items, x => !string.IsNullOrEmpty(x.Street));
+			Assert.Contains(b.Items, x => x.City == "Nymburk");
+			Assert.Contains(b.Items, x => x.ZIP == "28802");
 			Assert.Contains(b.Items, x => x.Country == "CZ");
 		}
 
@@ -201,7 +201,7 @@ namespace BalikoBot.Tests
 			Assert.Contains(pkg, x => x.Key == BalikoBotData.WIDTH && x.Value.ToString() == "40.00");
 			Assert.Contains(pkg, x => x.Key == BalikoBotData.LENGTH && x.Value.ToString() == "60.00");
 			Assert.Contains(pkg, x => x.Key == BalikoBotData.HEIGHT && x.Value.ToString() == "30.00");
-			Assert.Contains(pkg, x => x.Key == BalikoBotData.WEIGHT && x.Value.ToString() == "2.00");
+			Assert.Contains(pkg, x => x.Key == BalikoBotData.WEIGHT && x.Value.ToString() == "2.50");
 		}
 
 		[Fact]
